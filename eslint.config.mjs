@@ -16,7 +16,6 @@ const eslintConfig = [
     "plugin:prettier/recommended",
     "plugin:tailwindcss/recommended",
     "prettier",
-    "next/core-web-vitals",
     "next/typescript",
   ),
 ];

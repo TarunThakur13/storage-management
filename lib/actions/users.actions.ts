@@ -91,22 +91,26 @@ export const verifySecret = async ({
 };
 
 export const getCurrentUser = async () => {
-  const client = await createSessionClient();
-  if (!client) {
-    // Handle the case when there's no session
-    throw new Error("No active session found");
+  try {
+    const client = await createSessionClient();
+    if (!client) {
+      // Handle the case when there's no session
+      throw new Error("No active session found");
+    }
+
+    const { databases, account } = client;
+
+    const result = await account.get();
+    const user = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      [Query.equal("accountId", result.$id)],
+    );
+    if (user.total <= 0) return null;
+    return parseStringify(user.documents[0]);
+  } catch (error) {
+    console.log(error);
   }
-
-  const { databases, account } = client;
-
-  const result = await account.get();
-  const user = await databases.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.usersCollectionId,
-    [Query.equal("accountId", result.$id)],
-  );
-  if (user.total <= 0) return null;
-  return parseStringify(user.documents[0]);
 };
 
 export const signOutUser = async () => {
